@@ -4,7 +4,7 @@ postgresql-php-tools
 last modified: 02.05.2009
 version: 0.0.1
 
-Andreas Wenk
+Andreas Wenk (Hamburg, Germany)
 
 a.wenk@netzmeister-st-pauli.de
 http://www.netzmeister-st-pauli.de
