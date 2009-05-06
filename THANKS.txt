@@ -1,0 +1,6 @@
+THANKS postgresql-php-tools
+===========================
+
+Actually I would like to thank Thomas Pfeiffer (thomas@milkno.com) for
+the coding stuff he showed me over the last years and for the originally
+wrapper for MySQL. 
