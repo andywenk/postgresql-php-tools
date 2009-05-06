@@ -29,8 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: PgSQL.php 19 2009-04-30 20:20:06Z aw $
- *
  * PHP5 is required for the use of this class
  *
  * @author Andreas Wenk
@@ -89,11 +87,7 @@ class PgSQL {
 			if(!pg_free_result($this->dbh)) {
 				throw new Exception('close(): unable to free database result');
 			}
-		} catch (Exception $e) {
-			self::error_string($e);
-		}
 
-		try {
 			if(!pg_close($this->dbh)) {
 				throw new Exception('close(): unable to close connection to database');
 			}
