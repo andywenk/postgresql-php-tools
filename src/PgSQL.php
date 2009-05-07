@@ -35,7 +35,7 @@
  * @link http://www.netzmeister-st-pauli.de
  * @category Library
  * @package PgSQL
- * @version 0.0.1
+ * @version 0.0.2
  * @link http://github.com/
  */
 class PgSQL {
@@ -301,6 +301,7 @@ class PgSQL {
 			}
 		} catch (Exception $e) {
 			self::error_string($e);
+			return false;
 		}
 
 		return true;
@@ -320,16 +321,21 @@ class PgSQL {
 				if($res != pg_execute($this->dbh, $stmt_name, $values)){
 					throw new Exception ('execute(): executing prepared statement failed');
 				}
-
-				return pg_fetch_all($res);
+				
+				if(!$res = pg_fetch_all($res) {
+					throw new Exception ('execute(): fetching data failed');
+				}
+				
+				// seems weired but has to be like that, because $res will only be filled
+				// when using SELECT
+				return (!empty($res) ? $res : true;
 			} else {
 				throw new Exception ('execute(): connection is busy ');
 			}
 		} catch (Exception $e) {
 			self::error_string($e);
+			return false;
 		}
-
-		return true;
 	}
 
 	/**
