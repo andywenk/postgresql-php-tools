@@ -35,7 +35,7 @@
  * @link http://www.netzmeister-st-pauli.de
  * @category Library
  * @package PgSQL
- * @version 0.0.2
+ * @version 0.0.4
  * @link http://github.com/
  */
 class PgSQL {
