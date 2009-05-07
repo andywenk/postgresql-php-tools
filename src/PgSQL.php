@@ -294,7 +294,7 @@ class PgSQL {
 						throw new Exception ('prepare(): prepare was not successfull');
 					}
 				} catch (Exception $e) {
-					self::error_string($e);
+					throw $e;
 				}
 			} else {
 				throw new Exception ('prepare(): connection is busy ');
