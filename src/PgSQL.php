@@ -318,7 +318,7 @@ class PgSQL {
 	public function execute($stmt_name, array $values) {
 		try {
 			if(!pg_connection_busy($this->dbh)) {
-				if($res != pg_execute($this->dbh, $stmt_name, $values)){
+				if(!$res = pg_execute($this->dbh, $stmt_name, $values)){
 					throw new Exception ('execute(): executing prepared statement failed');
 				}
 				
