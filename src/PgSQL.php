@@ -35,7 +35,7 @@
  * @link http://www.netzmeister-st-pauli.de
  * @category Library
  * @package PgSQL
- * @version 0.0.4
+ * @version 0.0.5
  * @link http://github.com/
  */
 class PgSQL {
@@ -322,10 +322,8 @@ class PgSQL {
 					throw new Exception ('execute(): executing prepared statement failed');
 				}
 				
-				if(!$res = pg_fetch_all($res) {
-					throw new Exception ('execute(): fetching data failed');
-				}
-				
+				$res = pg_fetch_all($res);
+								
 				// seems weired but has to be like that, because $res will only be filled
 				// when using SELECT
 				return (!empty($res) ? $res : true;
