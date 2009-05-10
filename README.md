@@ -70,11 +70,26 @@ class methods in the well known OOP way.
 			$db->execute('prep_name', array($k, $v));
 		}		
 		
-		Using prepared statements with a SELECT statement is also supportetd
+		Using prepared statements with a SELECT statement is also supportetd. If
+		using SELECT use the fetch() methjod to recieve a result array
+
+		$qs = " SELECT data FROM table WHERE id = $1";
+		$db->prepare($qs, 'prep_name');
+
+		$result_array = array();
+		foreach($id_array as $v) {
+			$res_id = $db->execute('prep_name', array($v['id']));
+			$result_array[] = $db->fetch($res_id);
+		}
 
 
 Changelog:
 ----------
+10.05.2009: 0.0.6
+	- new method fetch()
+	- when exception handling is integrated, added @ before
+	  PHP pg_ method to avoid errors, warnings and notice
+	- updated README.md
 02.05.2009: 0.0.1
 	- fix some typo's in README.md
 30.04.2009: 0.0.1
