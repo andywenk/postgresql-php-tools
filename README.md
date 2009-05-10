@@ -1,8 +1,8 @@
 postgresql-php-tools
 ====================
 
-last modified: 02.05.2009
-version: 0.0.1
+last modified: 10.05.2009
+version: 0.0.6
 
 Andreas Wenk (Hamburg, Germany)
 
