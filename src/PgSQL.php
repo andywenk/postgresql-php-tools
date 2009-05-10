@@ -35,7 +35,7 @@
  * @link http://www.netzmeister-st-pauli.de
  * @category Library
  * @package PgSQL
- * @version 0.0.5
+ * @version 0.0.6
  * @link http://github.com/
  */
 class PgSQL {
@@ -63,7 +63,7 @@ class PgSQL {
 	 * @return $this->dbh
 	 */
 	public function connect($host, $port, $database, $user, $pass) {
-		$this->dbh = pg_connect("host=".$host." port=".$port." dbname=".$database." user=".$user." password=".$pass."");
+		$this->dbh = @pg_connect("host=".$host." port=".$port." dbname=".$database." user=".$user." password=".$pass."");
 
 		try {
 			if(!$this->dbh) {
@@ -84,13 +84,11 @@ class PgSQL {
 	 */
 	public function close() {
 		try {
-			if(!pg_free_result($this->dbh)) {
+			if(!@pg_free_result($this->dbh))
 				throw new Exception('close(): unable to free database result');
-			}
 
-			if(!pg_close($this->dbh)) {
+			if(!@pg_close($this->dbh))
 				throw new Exception('close(): unable to close connection to database');
-			}
 		} catch (Exception $e) {
 			self::error_string($e);
 		}
@@ -109,7 +107,7 @@ class PgSQL {
 		$i = 0;
 		
 		try {
-			$query = pg_query($this->dbh, $qs);
+			$query = @pg_query($this->dbh, $qs);
 
 			if(!$query){
                 throw new Exception('select(): ' .$qs);
@@ -144,7 +142,7 @@ class PgSQL {
 		$i = 0;
 
 		try {
-			$query = pg_query($this->dbh, $qs);
+			$query = @pg_query($this->dbh, $qs);
 
 			if(!$query) {
                 throw new Exception('select_row(): ' .$qs);
@@ -179,7 +177,7 @@ class PgSQL {
 		$res = array(); 
 		
 		try {
-			$query = pg_query($this->dbh, $qs);
+			$query = @pg_query($this->dbh, $qs);
 
 			if(!$query) {
                 throw new Exception('select_simple(): ' .$qs);
@@ -233,7 +231,7 @@ class PgSQL {
 
 		try {
 			while ($sql = array_shift($this->sql)) {
-				if(!pg_query($this->dbh, $sql)){
+				if(!@pg_query($this->dbh, $sql)){
 					self::rollback();
 					throw new Exception("transaction(): the transaction faild");
 				}
@@ -286,18 +284,17 @@ class PgSQL {
 	 */
 	public function prepare($qs, $stmt_name) {
 		try {
-			if(!pg_connection_busy($this->dbh)) {
-				pg_send_prepare($this->dbh, $stmt_name, $qs);
-
+			if(!@pg_connection_busy($this->dbh)) {
 				try {
-					if(!pg_get_result($this->dbh)) {
-						throw new Exception ('prepare(): prepare was not successfull');
-					}
+					if(!@pg_send_prepare($this->dbh, $stmt_name, $qs))
+						throw new Exception ('prepare(): send_prepare failed');
+					if(!@pg_get_result($this->dbh))
+						throw new Exception ('prepare(): get_result failed');
 				} catch (Exception $e) {
 					throw $e;
 				}
 			} else {
-				throw new Exception ('prepare(): connection is busy ');
+				throw new Exception ('prepare(): connection busy ');
 			}
 		} catch (Exception $e) {
 			self::error_string($e);
@@ -317,16 +314,9 @@ class PgSQL {
 	 */
 	public function execute($stmt_name, array $values) {
 		try {
-			if(!pg_connection_busy($this->dbh)) {
-				if(!$res = pg_execute($this->dbh, $stmt_name, $values)){
-					throw new Exception ('execute(): executing prepared statement failed');
-				}
-				
-				$res = pg_fetch_all($res);
-								
-				// seems weired but has to be like that, because $res will only be filled
-				// when using SELECT
-				return (!empty($res) ? $res : true;
+			if(!@pg_connection_busy($this->dbh)) {
+				$res = @pg_execute($this->dbh, $stmt_name, $values);
+				if(!$res) throw new Exception ('execute(): execute failed');
 			} else {
 				throw new Exception ('execute(): connection is busy ');
 			}
@@ -334,8 +324,32 @@ class PgSQL {
 			self::error_string($e);
 			return false;
 		}
+
+		return $res;
 	}
 
+	/**
+	 * This method returns a result set. A ressource id is
+	 * required. This methid can be used e.g when execute()
+	 * returns a ressource id
+	 *
+	 * @param object $ressource_id
+	 * @return array $res
+	 */
+	public function fetch($ressource_id) {
+		$res = array();
+
+		try {
+			$res = @pg_fetch_all($ressource_id);
+			if(!$res) throw new Exception ('fetch(): fetch failed');
+		} catch (Exception $e) {
+			self::error_string($e);
+			return false;
+		}
+
+		return $res;
+	}
+	
 	/**
 	 * return the count of fields in the result
 	 * of the statement
@@ -385,7 +399,7 @@ class PgSQL {
 	}
 
 	/**
-	 * output the error message. Expects the Exception object
+	 * output the error message. Requires the Exception object
 	 *
 	 * @param object $e
 	 */
