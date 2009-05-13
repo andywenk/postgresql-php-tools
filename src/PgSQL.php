@@ -231,13 +231,16 @@ class PgSQL {
 
 		try {
 			while ($sql = array_shift($this->sql)) {
-				if(!@pg_query($this->dbh, $sql)){
+				$query = @pg_query($this->dbh, $sql);
+				$errors[] = pg_last_error($this->dbh);
+				if(!$query){
 					self::rollback();
 					throw new Exception("transaction(): the transaction faild");
 				}
 			}
 		} catch (Exception $e) {
-			self::error_string($e);
+			$err = implode('<br />', $errors);
+			self::error_string($e,$err);
 			return false;
 		}
 		
@@ -403,7 +406,9 @@ class PgSQL {
 	 *
 	 * @param object $e
 	 */
-	private function error_string($e) {
+	private function error_string($e, $errors = null) {
+		$errors = (!empty($errors)) ? $errors : pg_last_error($this->dbh);
+		
 		echo "<table cellpadding=\"4\" cellspacing=\"4\" width=\"98%\" 
 					 style=\"border: 1px solid #990000;background-color:#eee;
 					 margin:10px;\">
@@ -417,7 +422,7 @@ class PgSQL {
 			  </tr>
 			  <tr>
 			  	<td><b style=\"color:#990000;\"><u>db message:</u><b></td>
-				<td>".pg_last_error($this->dbh)."</td>
+				<td>".$errors."</td>
 			  </tr>
 			</table>";
 	}
